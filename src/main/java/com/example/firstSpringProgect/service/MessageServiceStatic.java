@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-public class MessageServiceStatic implements IMessageService{
+public class MessageServiceStatic implements IMessageService {
 
     List<MessagePOJO> list = Arrays.asList(
             new MessagePOJO("asd","asd",new User())

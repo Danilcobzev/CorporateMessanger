@@ -11,4 +11,5 @@ public interface IMessageService {
     List<MessagePOJO> findByTag(String tag);
 
     void save(MessagePOJO m);
+
 }

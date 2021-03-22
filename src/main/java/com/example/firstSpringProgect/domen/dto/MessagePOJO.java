@@ -6,6 +6,7 @@ public class MessagePOJO {
     private String text;
     private String tag;
     private User author;
+    private String filename;
 
 
     public MessagePOJO(String text, String tag, User author) {
@@ -40,6 +41,14 @@ public class MessagePOJO {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     @Override
