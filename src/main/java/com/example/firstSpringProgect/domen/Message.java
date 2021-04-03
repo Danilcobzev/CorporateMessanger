@@ -18,10 +18,11 @@ public class Message {
 
     public Message(){};
 
-    public Message(String text, String tag,User user) {
-        this.author = user;
+    public Message(String text, String tag, User author, String filename) {
         this.text = text;
         this.tag = tag;
+        this.author = author;
+        this.filename = filename;
     }
 
     public User getAuthor() {

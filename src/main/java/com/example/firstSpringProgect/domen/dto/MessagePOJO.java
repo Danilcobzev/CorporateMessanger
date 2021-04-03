@@ -9,11 +9,7 @@ public class MessagePOJO {
     private String filename;
 
 
-    public MessagePOJO(String text, String tag, User author) {
-        this.text = text;
-        this.tag = tag;
-        this.author = author;
-    }
+
 
     public String getAuthorName(){
         return author != null ? author.getUsername():"none";
@@ -21,6 +17,12 @@ public class MessagePOJO {
 
     public String getText() {
         return text;
+    }
+
+    public MessagePOJO(String text, String tag, User author) {
+        this.text = text;
+        this.tag = tag;
+        this.author = author;
     }
 
     public void setText(String text) {

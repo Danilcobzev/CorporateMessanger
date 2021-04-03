@@ -31,6 +31,7 @@ public class MessageService implements IMessageService{
                     item.getTag(),
                     item.getAuthor()
             );
+            mp.setFilename(item.getFilename());
             list.add(mp);
             l.debug(mp.toString());
         }
@@ -42,11 +43,13 @@ public class MessageService implements IMessageService{
     public List<MessagePOJO> findByTag(String tag) {
         ArrayList<MessagePOJO> list = new ArrayList<MessagePOJO>();
         for (Message item : messageRepo.findByTag(tag)) {
-            list.add(new MessagePOJO(
+            MessagePOJO messagePOJO = new MessagePOJO(
                     item.getText(),
                     item.getTag(),
                     item.getAuthor()
-            ));
+            );
+            messagePOJO.setFilename(item.getFilename());
+            list.add(messagePOJO);
         }
         return list;
     }
@@ -57,7 +60,8 @@ public class MessageService implements IMessageService{
                 new Message(
                         messagePojo.getText(),
                         messagePojo.getTag(),
-                        messagePojo.getAuthor()
+                        messagePojo.getAuthor(),
+                        messagePojo.getFilename()
                 )
         );
     }
