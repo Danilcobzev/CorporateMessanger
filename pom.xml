@@ -14,12 +14,12 @@
         <version>2.0.0.RELEASE</version>
     </parent>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <flyway.user>Danil_1</flyway.user>
-        <flyway.password>cjqrf2</flyway.password>
-        <flyway.schemas>XE</flyway.schemas>
-    </properties>
+<!--    <properties>-->
+<!--        <java.version>1.8</java.version>-->
+<!--        <flyway.user>Danil_1</flyway.user>-->
+<!--        <flyway.password>cjqrf2</flyway.password>-->
+<!--        <flyway.schemas>XE</flyway.schemas>-->
+<!--    </properties>-->
 
     <dependencies>
         <dependency>
@@ -71,10 +71,10 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.flywaydb</groupId>-->
-<!--            <artifactId>flyway-core</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -92,17 +92,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>4.0.3</version>
-                <configuration>
-                    <url>jdbc:oracle:thin:@localhost:1521:xe</url>
-                    <user>Danil_1</user>
-                    <password>cjqrf2</password>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.flywaydb</groupId>-->
+<!--                <artifactId>flyway-maven-plugin</artifactId>-->
+<!--                <version>4.0.3</version>-->
+<!--                <configuration>-->
+<!--                    <url>jdbc:oracle:thin:@localhost:1521:xe</url>-->
+<!--                    <user>Danil_1</user>-->
+<!--                    <password>cjqrf2</password>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
-
 </project>
