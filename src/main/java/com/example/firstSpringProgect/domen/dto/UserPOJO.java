@@ -7,16 +7,16 @@ import java.util.Set;
 public class UserPOJO {
     private Long id;
     private String username;
-    private String password;
     private boolean active;
     private Set<Role> roles;
+    private String email;
 
-    public UserPOJO(Long id, String username, String password, boolean active, Set<Role> roles) {
+    public UserPOJO(Long id, String username, boolean active, Set<Role> roles, String email) {
         this.id = id;
         this.username = username;
-        this.password = password;
         this.active = active;
         this.roles = roles;
+        this.email = email;
     }
 
     public UserPOJO() {
@@ -36,14 +36,6 @@ public class UserPOJO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public boolean isActive() {
@@ -67,9 +59,16 @@ public class UserPOJO {
         return "UserPOJO{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", active=" + active +
                 ", roles=" + roles +
                 '}';
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -1,8 +1,10 @@
 package com.example.firstSpringProgect.domen;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Message {
