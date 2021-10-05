@@ -8,7 +8,6 @@ import java.util.Map;
 
 public interface IUserService {
     List<UserPOJO> findAll();
-    UserPOJO save(UserPOJO userPOJO, String password);
     UserPOJO getById(Long id);
     UserPOJO change(User user , String email);
     UserPOJO changeRoles(Long userId, Map<String, String> form);

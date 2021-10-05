@@ -4,11 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.Set;
-
 
 @Entity
 @Table(name = "usr")
@@ -118,6 +115,8 @@ public class User implements UserDetails {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", active=" + active +
+                ", email='" + email + '\'' +
+                ", activationCode='" + activationCode + '\'' +
                 ", roles=" + roles +
                 '}';
     }

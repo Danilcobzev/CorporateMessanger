@@ -2,11 +2,11 @@ package com.example.firstSpringProgect.service;
 
 import com.example.firstSpringProgect.domen.Role;
 import com.example.firstSpringProgect.domen.User;
-import com.example.firstSpringProgect.domen.dto.MessagePOJO;
 import com.example.firstSpringProgect.domen.dto.UserPOJO;
 import com.example.firstSpringProgect.providers.JwtConfirmProvider;
 import com.example.firstSpringProgect.repos.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,17 +19,23 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService, IUserService {
-    @Autowired
-    private UserRepo userRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
-    private MailSender mailSender;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private JwtConfirmProvider jwtConfirmProvider;
+    private final PasswordEncoder passwordEncoder;
+
+    private final MailSender mailSender;
+
+    private final JwtConfirmProvider jwtConfirmProvider;
+
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, MailSender mailSender, JwtConfirmProvider jwtConfirmProvider) {
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
+        this.jwtConfirmProvider = jwtConfirmProvider;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,29 +43,32 @@ public class UserService implements UserDetailsService, IUserService {
     }
 
     public boolean addUser(User user) {
+        LOGGER.info("Method addUser called");
         User userFromDb = userRepo.findByUsername(user.getUsername());
-
-        if (userFromDb != null) {
-            return false;
+        boolean exists = true;
+        if (userFromDb == null) {
+            user.setActive(true);
+            user.setRoles(Collections.singleton(Role.USER));
+            user.setActivationCode(UUID.randomUUID().toString());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            User savedUser = userRepo.save(user);
+            LOGGER.info("user saved:" + savedUser.toString());
+            sendMessage(user);
+        }else {
+            LOGGER.info("user already exists");
+            exists = false;
         }
-
-        user.setActive(true);
-        user.setRoles(Collections.singleton(Role.USER));
-        user.setActivationCode(UUID.randomUUID().toString());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        userRepo.save(user);
-
-        sendMessage(user);
-
-        return true;
+        return exists;
     }
 
     private void sendMessage(User user) {
-        if (!StringUtils.isEmpty(user.getEmail())) {
+        if (StringUtils.isEmpty(user.getEmail())) {
+            LOGGER.info("User "+user.getUsername()+" ["+user.getId()+"] not have email");
+        }else{
+            LOGGER.info("sending an email to confirm the user  "+user.getUsername()+" ["+user.getId()+"]");
             String message = String.format(
                     "Hello, %s! \n" +
-                            "Welcome to CorporateMessenger. Please, visit next link: http://localhost:8081/activate/%s",
+                            "Welcome to CorporateMessenger. Please, visit next link: http://localhost:8081/registration/activate/%s",
                     user.getUsername(),
                     user.getActivationCode()
             );
@@ -69,10 +78,14 @@ public class UserService implements UserDetailsService, IUserService {
     }
 
     private void sendMessage(User user, String newEmail) {
-        if (!StringUtils.isEmpty(user.getEmail())) {
+        if (StringUtils.isEmpty(user.getEmail())) {
+            change(user,newEmail);
+            LOGGER.info("User "+user.getUsername()+" added email: "+newEmail);
+        }else{
+            LOGGER.info("sending an email to update the email to the user "+user.getUsername()+" ["+user.getId()+"]");
             String message = String.format(
                     "Hello, %s! \n" +
-                            "Welcome to CorporateMessenger. Please, visit next link: http://localhost:8081/user/changeEmail/%s",
+                            "Please, visit next link: http://localhost:8081/user/changeEmail/%s",
                     user.getUsername(),
                     jwtConfirmProvider.generateToken(user.getId(), newEmail)
             );
@@ -112,52 +125,23 @@ public class UserService implements UserDetailsService, IUserService {
         return list;
     }
 
-    /**
-     * не используется ,
-     * вместо addUser (в теории)
-     */
-    @Override
-    public UserPOJO save(UserPOJO userPOJO, String password) {
-        User user = new User();
-        user.setRoles(userPOJO.getRoles());
-        user.setId(userPOJO.getId());
-        user.setUsername(userPOJO.getUsername());
-        user.setActive(userPOJO.isActive());
-        user.setPassword(passwordEncoder.encode(password));
-        user.setEmail(userPOJO.getEmail());
-
-        User item = userRepo.save(user);
-
-        UserPOJO res = new UserPOJO(
-                item.getId(),
-                item.getUsername(),
-                item.isActive(),
-                item.getRoles(),
-                item.getEmail()
-        );
-        return res;
-    }
-
     @Override
     public UserPOJO getById(Long id) {
-        Optional<User> optionalUser = userRepo.findById(id);
-        User u = optionalUser.get();
-        UserPOJO up = new UserPOJO(
-                u.getId(),
-                u.getUsername(),
-                u.isActive(),
-                u.getRoles(),
-                u.getEmail()
+        User user = userRepo.findById(id).orElseThrow(()-> new RuntimeException("Can not find user by user id"));
+        return new UserPOJO(
+                user.getId(),
+                user.getUsername(),
+                user.isActive(),
+                user.getRoles(),
+                user.getEmail()
         );
-        return up;
 
     }
 
     @Override
     public UserPOJO change(User user, String newEmail) {
         String userEmail = user.getEmail();
-        boolean isEmailChanged = (newEmail != null && !newEmail.equals(userEmail)) ||
-                (userEmail != null && !userEmail.equals(newEmail));
+        boolean isEmailChanged = isEmailChanged(newEmail, userEmail);
         if (isEmailChanged) {
             user.setEmail(newEmail);
         }
@@ -165,28 +149,26 @@ public class UserService implements UserDetailsService, IUserService {
         if (isEmailChanged) {
             sendMessage(user);
         }
-        UserPOJO savedUserPOJO = new UserPOJO(
+        return new UserPOJO(
                 savedUser.getId(),
                 savedUser.getUsername(),
                 savedUser.isActive(),
                 savedUser.getRoles(),
                 savedUser.getEmail()
         );
-        return savedUserPOJO;
+    }
+
+    private boolean isEmailChanged(String newEmail, String userEmail) {
+        return newEmail != null && !newEmail.equals(userEmail) ||
+                userEmail != null && !userEmail.equals(newEmail);
     }
 
     @Override
     public void userWannaChangeEmail(User user, String newEmail) {
         String userEmail = user.getEmail();
-        boolean isEmailChanged = (newEmail != null && !newEmail.equals(userEmail)) ||
-                (userEmail != null && !userEmail.equals(newEmail));
-        if (isEmailChanged) {
-            // user.setEmail(email);
-
-            if (!StringUtils.isEmpty(newEmail)) {
-                sendMessage(user, newEmail);
-                //   user.setActivationCode(UUID.randomUUID().toString());
-            }
+        boolean isEmailChanged = isEmailChanged(newEmail, userEmail);
+        if (!StringUtils.isEmpty(newEmail)&&isEmailChanged) {
+            sendMessage(user, newEmail);
         }
         if (isEmailChanged) {
             sendMessage(user);
@@ -195,6 +177,7 @@ public class UserService implements UserDetailsService, IUserService {
 
     @Override
     public UserPOJO changeRoles(Long userId, Map<String, String> form) {
+        User user = userRepo.findById(userId).orElseThrow(()-> new RuntimeException("Can not find user by user id"));
         Set<String> roles = Arrays.stream(Role.values()).map(Role::name).collect(Collectors.toSet());
         Set<Role> roles1 = new HashSet<>();
         for (String key : form.keySet()) {
@@ -203,18 +186,15 @@ public class UserService implements UserDetailsService, IUserService {
             }
         }
 
-        Optional<User> optionalUser = userRepo.findById(userId);
-        User user = optionalUser.get();
         user.setRoles(roles1);
         User item = userRepo.save(user);
-        UserPOJO res = new UserPOJO(
+
+        return new UserPOJO(
                 item.getId(),
                 item.getUsername(),
                 item.isActive(),
                 item.getRoles(),
                 item.getEmail()
         );
-
-        return res;
     }
 }

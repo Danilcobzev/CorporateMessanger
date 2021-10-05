@@ -5,7 +5,6 @@ import com.example.firstSpringProgect.domen.dto.MessagePOJO;
 import com.example.firstSpringProgect.repos.MessageRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -14,17 +13,19 @@ import java.util.List;
 
 @Component
 @Primary
-public class MessageService implements IMessageService{
+public class MessageService implements IMessageService {
 
-    private Logger l = LoggerFactory.getLogger(MessageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
 
-    @Autowired
-    private MessageRepo messageRepo;
+    private final MessageRepo messageRepo;
+
+    public MessageService(MessageRepo messageRepo) {
+        this.messageRepo = messageRepo;
+    }
 
     @Override
     public List<MessagePOJO> getAll() {
         ArrayList<MessagePOJO> list = new ArrayList<MessagePOJO>();
-        l.debug("Вызван метод getAll. Возвращаю :");
         for (Message item : messageRepo.findAll()) {
             MessagePOJO mp = new MessagePOJO(
                     item.getText(),
@@ -33,15 +34,17 @@ public class MessageService implements IMessageService{
             );
             mp.setFilename(item.getFilename());
             list.add(mp);
-            l.debug(mp.toString());
         }
-        l.debug("_____________");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("returning it:" + list.toString());
+        }
         return list;
     }
 
     @Override
     public List<MessagePOJO> findByTag(String tag) {
         ArrayList<MessagePOJO> list = new ArrayList<MessagePOJO>();
+        LOGGER.info("Method findByTag called");
         for (Message item : messageRepo.findByTag(tag)) {
             MessagePOJO messagePOJO = new MessagePOJO(
                     item.getText(),
@@ -51,12 +54,14 @@ public class MessageService implements IMessageService{
             messagePOJO.setFilename(item.getFilename());
             list.add(messagePOJO);
         }
+        LOGGER.debug(" return it from the findByTag method :" + list.toString());
         return list;
     }
 
     @Override
     public void save(MessagePOJO messagePojo) {
-        messageRepo.save(
+        LOGGER.info("Method save called");
+        Message message = messageRepo.save(
                 new Message(
                         messagePojo.getText(),
                         messagePojo.getTag(),
@@ -64,5 +69,6 @@ public class MessageService implements IMessageService{
                         messagePojo.getFilename()
                 )
         );
+        LOGGER.debug("Saved in db:" + message.toString());
     }
 }

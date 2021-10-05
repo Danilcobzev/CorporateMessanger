@@ -2,45 +2,46 @@ package com.example.firstSpringProgect.controller;
 
 import com.example.firstSpringProgect.domen.User;
 import com.example.firstSpringProgect.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Controller
-public class RegistrationController {
-    @Autowired
-    private UserService userService;
+import static com.example.firstSpringProgect.constans.Attribute.MESSAGE;
 
-    @GetMapping("/registration")
+@Controller
+@RequestMapping("/registration")
+public class RegistrationController {
+
+    private final UserService userService;
+
+    public RegistrationController(UserService userService) {
+        this.userService=userService;
+    }
+
+    @GetMapping
     public String registration() {
         return "registration";
     }
 
-    @PostMapping("/registration")
+    @PostMapping
     public String addUser(User user, Map<String, Object> model) {
         if (!userService.addUser(user)) {
-            model.put("message", "User exists!");
+            model.put(MESSAGE, "User exists!");
             return "registration";
         }
-
         return "redirect:/login";
     }
 
-    @GetMapping("/activate/{code}")
+    @RequestMapping(value = "/activate/{code}", method = RequestMethod.GET)
     public String activate(Model model, @PathVariable String code) {
         boolean isActivated = userService.activateUser(code);
-
         if (isActivated) {
-            model.addAttribute("message", "User successfully activated");
+            model.addAttribute(MESSAGE, "User successfully activated");// todo: вынести ВСЕ Attribute в отдельный класс
         } else {
-            model.addAttribute("message", "Activation code is not found!");
+            model.addAttribute(MESSAGE, "Activation code is not found!");
         }
-
         return "login";
     }
 }

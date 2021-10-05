@@ -1,13 +1,13 @@
-com\example\firstSpringProgect\controller\TestController.class
 com\example\firstSpringProgect\domen\Role.class
+com\example\firstSpringProgect\providers\JwtConfirmProvider.class
 com\example\firstSpringProgect\config\MvcConfig.class
+com\example\firstSpringProgect\config\EncryptionConfig.class
 com\example\firstSpringProgect\service\UserService.class
 com\example\firstSpringProgect\domen\dto\MessagePOJO.class
 com\example\firstSpringProgect\repos\MessageRepo.class
 com\example\firstSpringProgect\domen\Message.class
 com\example\firstSpringProgect\controller\RegistrationController.class
 com\example\firstSpringProgect\config\MailConfig.class
-com\example\firstSpringProgect\domen\Customer.class
 com\example\firstSpringProgect\service\IMessageService.class
 com\example\firstSpringProgect\domen\User.class
 com\example\firstSpringProgect\service\MailSender.class
@@ -19,4 +19,3 @@ com\example\firstSpringProgect\repos\UserRepo.class
 com\example\firstSpringProgect\controller\UserController.class
 com\example\firstSpringProgect\service\MessageService.class
 com\example\firstSpringProgect\Application.class
-com\example\firstSpringProgect\service\MessageServiceStatic.class

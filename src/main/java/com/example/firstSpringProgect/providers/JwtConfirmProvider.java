@@ -1,10 +1,10 @@
 package com.example.firstSpringProgect.providers;
 
-import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -13,7 +13,11 @@ import java.security.NoSuchAlgorithmException;
 
 @Component
 public class JwtConfirmProvider {
-    private String secretKeyString = "sdfgh";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtConfirmProvider.class);
+
+    private static final String SECRET_KEY_STRING = "sdfgh";
+
     private SecretKey secretKey;
 
     @PostConstruct
@@ -21,15 +25,15 @@ public class JwtConfirmProvider {
         try {
             secretKey = new SecretKeySpec(
                     MessageDigest.getInstance("SHA-256")
-                            .digest(secretKeyString.getBytes()),
+                            .digest(SECRET_KEY_STRING.getBytes()),
                     "HmacSHA256"
             );
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            LOGGER.error("",e);
         }
     }
 
-    public String generateToken(Long userId,String newEmail){
+    public String generateToken(Long userId,String newEmail) {
         return Jwts.builder()
                 .setSubject(newEmail)
                 .setId(userId.toString())
@@ -37,17 +41,12 @@ public class JwtConfirmProvider {
                 .compact();
     }
 
-    public String getEmailFromToken(String token){
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return claims.getSubject();
-        } catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
+    public String getEmailFromToken(String token) throws Exception {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 }
