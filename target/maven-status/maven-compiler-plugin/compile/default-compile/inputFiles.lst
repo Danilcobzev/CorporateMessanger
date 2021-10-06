@@ -12,6 +12,7 @@ D:\SpringProject\src\main\java\com\example\firstSpringProgect\controller\MainCon
 D:\SpringProject\src\main\java\com\example\firstSpringProgect\service\IMessageService.java
 D:\SpringProject\src\main\java\com\example\firstSpringProgect\service\MessageService.java
 D:\SpringProject\src\main\java\com\example\firstSpringProgect\controller\UserController.java
+D:\SpringProject\src\main\java\com\example\firstSpringProgect\constans\Attribute.java
 D:\SpringProject\src\main\java\com\example\firstSpringProgect\domen\Message.java
 D:\SpringProject\src\main\java\com\example\firstSpringProgect\repos\MessageRepo.java
 D:\SpringProject\src\main\java\com\example\firstSpringProgect\config\EncryptionConfig.java

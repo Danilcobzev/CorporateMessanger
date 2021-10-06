@@ -2,6 +2,7 @@ com\example\firstSpringProgect\domen\Role.class
 com\example\firstSpringProgect\providers\JwtConfirmProvider.class
 com\example\firstSpringProgect\config\MvcConfig.class
 com\example\firstSpringProgect\config\EncryptionConfig.class
+com\example\firstSpringProgect\constans\Attribute.class
 com\example\firstSpringProgect\service\UserService.class
 com\example\firstSpringProgect\domen\dto\MessagePOJO.class
 com\example\firstSpringProgect\repos\MessageRepo.class
